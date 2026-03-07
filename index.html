@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" crossorigin="anonymous"></script>
 
     <style>
-        /* 原有样式保持不变 */
+        /* 原有生日贺卡样式保持不变 */
         :root { --bg-gradient: radial-gradient(circle at center, #1a0b1a 0%, #000000 100%); }
         body { 
             margin: 0; overflow: hidden; 
@@ -147,7 +147,6 @@
         .scrollable-text::-webkit-scrollbar-track { background: transparent; }
         .scrollable-text::-webkit-scrollbar-thumb { background-color: rgba(255, 105, 180, 0.5); border-radius: 10px; }
         
-        /* 手势提示浮层 */
         .gesture-hint {
             position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%);
             background: rgba(255,192,203,0.2); backdrop-filter: blur(5px);
@@ -157,6 +156,191 @@
             pointer-events: none; transition: opacity 0.3s;
         }
         .gesture-hint.hidden { opacity: 0; }
+
+        /* ===== 新增弹窗祝福样式 ===== */
+        #popup-layer { 
+            position: absolute; 
+            inset: 0; 
+            pointer-events: none; 
+            z-index: 9998; 
+            display: none; 
+        }
+        #popup-layer.active { 
+            display: block; 
+        }
+        .popup { 
+            position: absolute; 
+            width: 180px; 
+            color: #1a1a1a; 
+            background: #ffffff; 
+            border-radius: 7px; 
+            border: 1px solid #e5e5e5; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.08); 
+            pointer-events: all; 
+            user-select: none; 
+            overflow: hidden; 
+            opacity: 1; 
+            transform-origin: center; 
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .popup .close-btn { 
+            position: absolute; 
+            top: 2px; 
+            right: 2px; 
+            width: 16px; 
+            height: 16px; 
+            border: none; 
+            background: transparent; 
+            color: #4d4d4d; 
+            cursor: pointer; 
+            font-size: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 50%; 
+            outline: none;
+        }
+        .popup .close-btn:focus { 
+            background: rgba(0, 120, 212, 0.2); 
+            color: #0078d4; 
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.3); 
+        }
+        .popup .header { 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+            padding: 3px 8px; 
+            background: #f3f3f3; 
+            border-bottom: 1px solid #e5e5e5; 
+        }
+        .popup .header .icon { font-size: 14px; } 
+        .popup .header .title { font-weight: 800; font-size: 13px; }
+        .popup .content { 
+            padding: 6px 10px; 
+            color: #1a1a1a; 
+            font-size: 16px; 
+            font-weight: 600; 
+            line-height: 1.25; 
+            text-align: center; 
+        }
+        
+        /* 弹窗主题样式 */
+        .popup.theme-blue .header { background: #e3f2fd; border-bottom-color: #bbdefb; } 
+        .popup.theme-blue .content { background: #f1f8ff; }
+        .popup.theme-green .header { background: #e8f5e9; border-bottom-color: #c8e6c9; } 
+        .popup.theme-green .content { background: #f1f8f4; }
+        .popup.theme-orange .header { background: #fff3e0; border-bottom-color: #ffe0b2; } 
+        .popup.theme-orange .content { background: #fffaf3; }
+        .popup.theme-purple .header { background: #f3e5f5; border-bottom-color: #e1bee7; } 
+        .popup.theme-purple .content { background: #faf5fc; }
+        .popup.theme-pink .header { background: #fce4ec; border-bottom-color: #f8bbd0; } 
+        .popup.theme-pink .content { background: #fff0f5; }
+        .popup.theme-yellow .header { background: #fffde7; border-bottom-color: #fff9c4; } 
+        .popup.theme-yellow .content { background: #fffef7; }
+        .popup.theme-cyan .header { background: #e0f7fa; border-bottom-color: #b2ebf2; } 
+        .popup.theme-cyan .content { background: #f0fcff; }
+        .popup.theme-lime .header { background: #f9fbe7; border-bottom-color: #f0f4c3; } 
+        .popup.theme-lime .content { background: #fdfef8; }
+        .popup.theme-red .header { background: #ffebee; border-bottom-color: #ffcdd2; } 
+        .popup.theme-red .content { background: #fff5f5; }
+        .popup.theme-teal .header { background: #e0f2f1; border-bottom-color: #b2dfdb; } 
+        .popup.theme-teal .content { background: #f0f8f7; }
+        .popup.theme-indigo .header { background: #ede7f6; border-bottom-color: #d1c4e9; } 
+        .popup.theme-indigo .content { background: #f5f3ff; }
+        .popup.theme-amber .header { background: #fff8e1; border-bottom-color: #ffe082; } 
+        .popup.theme-amber .content { background: #fffcf5; }
+        .popup.theme-rose .header { background: #fee; border-bottom-color: #ffccd5; } 
+        .popup.theme-rose .content { background: #fff1f3; }
+        .popup.theme-mint .header { background: #eaf6fa; border-bottom-color: #b2ebf2; } 
+        .popup.theme-mint .content { background: #f5fafe; }
+        .popup.theme-peach .header { background: #fff3e0; border-bottom-color: #ffcc80; } 
+        .popup.theme-peach .content { background: #fff8e6; }
+        .popup.theme-lavender .header { background: #f3e5f5; border-bottom-color: #ce93d8; } 
+        .popup.theme-lavender .content { background: #faf0f5; }
+        .popup.theme-coral .header { background: #ffe0b2; border-bottom-color: #ffcc80; } 
+        .popup.theme-coral .content { background: #fff8e6; }
+        .popup.theme-sky .header { background: #e3f2fd; border-bottom-color: #90caf9; } 
+        .popup.theme-sky .content { background: #f5f9ff; }
+        .popup.theme-lemon .header { background: #fffde7; border-bottom-color: #fff59d; } 
+        .popup.theme-lemon .content { background: #fffefa; }
+        
+        /* 弹窗入场动画 */
+        @keyframes popup-from-top {
+            0% { opacity: 0; transform: scale(0.3) translateY(-60px); }
+            60% { opacity: 1; transform: scale(1.08) translateY(0); }
+            80% { transform: scale(0.95) translateY(0); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes popup-from-bottom {
+            0% { opacity: 0; transform: scale(0.3) translateY(60px); }
+            60% { opacity: 1; transform: scale(1.08) translateY(0); }
+            80% { transform: scale(0.95) translateY(0); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes popup-from-left {
+            0% { opacity: 0; transform: scale(0.3) translateX(-60px); }
+            60% { opacity: 1; transform: scale(1.08) translateX(0); }
+            80% { transform: scale(0.95) translateX(0); }
+            100% { opacity: 1; transform: scale(1) translateX(0); }
+        }
+        @keyframes popup-from-right {
+            0% { opacity: 0; transform: scale(0.3) translateX(60px); }
+            60% { opacity: 1; transform: scale(1.08) translateX(0); }
+            80% { transform: scale(0.95) translateX(0); }
+            100% { opacity: 1; transform: scale(1) translateX(0); }
+        }
+        @keyframes popup-from-topleft {
+            0% { opacity: 0; transform: scale(0.3) translate(-50px, -50px); }
+            60% { opacity: 1; transform: scale(1.08) translate(0, 0); }
+            80% { transform: scale(0.95) translate(0, 0); }
+            100% { opacity: 1; transform: scale(1) translate(0, 0); }
+        }
+        @keyframes popup-from-topright {
+            0% { opacity: 0; transform: scale(0.3) translate(50px, -50px); }
+            60% { opacity: 1; transform: scale(1.08) translate(0, 0); }
+            80% { transform: scale(0.95) translate(0, 0); }
+            100% { opacity: 1; transform: scale(1) translate(0, 0); }
+        }
+        @keyframes popup-from-bottomleft {
+            0% { opacity: 0; transform: scale(0.3) translate(-50px, 50px); }
+            60% { opacity: 1; transform: scale(1.08) translate(0, 0); }
+            80% { transform: scale(0.95) translate(0, 0); }
+            100% { opacity: 1; transform: scale(1) translate(0, 0); }
+        }
+        @keyframes popup-from-bottomright {
+            0% { opacity: 0; transform: scale(0.3) translate(50px, 50px); }
+            60% { opacity: 1; transform: scale(1.08) translate(0, 0); }
+            80% { transform: scale(0.95) translate(0, 0); }
+            100% { opacity: 1; transform: scale(1) translate(0, 0); }
+        }
+        
+        .anim-top { animation: popup-from-top 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .anim-bottom { animation: popup-from-bottom 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .anim-left { animation: popup-from-left 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .anim-right { animation: popup-from-right 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .anim-topleft { animation: popup-from-topleft 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .anim-topright { animation: popup-from-topright 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .anim-bottomleft { animation: popup-from-bottomleft 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .anim-bottomright { animation: popup-from-bottomright 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        @media (max-width: 640px) { 
+            .popup { 
+                width: min(230px, 85vw); 
+                max-width: calc(100vw - 20px);
+            } 
+            .popup .content { 
+                font-size: 14px; 
+                padding: 4px 8px;
+            }
+        }
+        @media (max-width: 360px) {
+            .popup {
+                width: min(200px, 90vw);
+            }
+            .popup .content {
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -183,7 +367,7 @@
             <h1 class="text-6xl mb-2 font-handwriting text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-400 drop-shadow-lg">Happy Birthday</h1>
             <div class="space-y-4 text-gray-200 text-lg mb-8 font-light">
                 <p>👋 <b>對著鏡頭 舉起雙手</b> 喚醒魔法</p>
-                <p>👉 <b>竖起食指 (手势1)</b> 召唤图片粒子</p>
+                <p>👉 <b>竖起食指 (手势1)</b> 召唤弹窗祝福</p>
                 <p>✌️ <b>剪刀手 (手势2)</b> 返回蛋糕场景</p>
                 <p>💨 <b>持續吹氣</b> 許下心願</p>
             </div>
@@ -300,6 +484,8 @@
         </div>
     </div>
 
+    <!-- 新增弹窗祝福层 -->
+    <div id="popup-layer" aria-live="polite" aria-atomic="false"></div>
 
 
     <script>
@@ -323,7 +509,7 @@
         const CAKE_THEME = { bottom: "#800080", top: "#DDA0DD", cream: "#FFFFE0" };
         const VISUAL_CONFIG = { particleCount: IS_MOBILE ? 4000 : 7500, color: 0xff69b4, blowThreshold: 25, blowMaxDuration: 100 };
         // 状态定义
-        const STATE = { INTRO: -1, IDLE: 0, COUNTDOWN: 1, CAKE: 2, BLOWING: 3, CELEBRATION: 4, CUSTOM_IMAGE: 5 };
+        const STATE = { INTRO: -1, IDLE: 0, COUNTDOWN: 1, CAKE: 2, BLOWING: 3, CELEBRATION: 4, POPUP: 5 }; // 新增 POPUP 状态
         
         let currentState = STATE.INTRO;
         let interactionMode = 0; 
@@ -382,6 +568,126 @@
             gestureHint: document.getElementById('gesture-hint')
         };
 
+        // ========== 弹窗祝福模块 ==========
+        const popupLayer = document.getElementById('popup-layer');
+        const popupContents = [
+         "多喝水哦~", "保持微笑呀", "每天都要元氣滿滿", "記得好好吃飯", "珍惜每一刻",
+ "你超棒的", "記得好好保養", "早點休息", "金榜題名", "保持好心情", "注意保暖",
+ "萬事如意", "心想事成", "平安喜樂", "健康快樂", "學業有成", "工作順利", "財源廣進",
+ "閔家幸福", "笑口常開", "好運連連", "夢想成真", "友誼長存", "愛情甜蜜",
+ "早餐加蛋更營養呀", "通勤別趕太急哦", "累了伸個懶腰吧", "今天會有小幸運呢",
+ "別被瑣事絆住腳呀", "午餐加份蔬菜呀", "傍晚散步很愜意呢", "睡前泡泡腳舒服哦",
+ "偶爾放空也不錯呀", "遇難題先深呼吸呀", "每天都要更愛自己", "天冷加件外套哦",
+ "讀首小詩放鬆下吧", "跟爸媽通個電話呀", "別鑽牛角尖啦", "路邊的小草也在生長呢",
+ "加班別忘吃點東西", "用眼久了閉閉眼呀", "你今天也在進步呢", "煩惱會慢慢消失的",
+ "下雨天記得穿防滑鞋", "夏天多吃點水果呀", "跟朋友分享趣事吧", "夜裡不做惡夢哦",
+ "做件小事獎勵自己", "別焦慮，一切都會好", "學會新東西超棒呀", "遇到的人都很友善呢"
+        ];
+        const POPUP_CONFIG = {
+            maxCount: IS_MOBILE ? 90 : 150,
+            createInterval: IS_MOBILE ? 160 : 80,
+            autoRemoveTime: 12000,
+            themes: ["blue","green","orange","purple","pink","yellow","cyan","lime","red","teal","indigo","amber","rose","mint","peach","lavender","coral","sky","lemon"],
+            icons: ["✨","😊","🌟","💖","☀️","💪","🌸","🥰","🎉","💫","🎃","🍬","👻"],
+            titles: [`給你的祝福`, `給你的話`, `給你的温馨提醒`, `給你的寄語`]
+        };
+        let currentPopupCount = 0;
+        let popupInterval = null;
+
+        function getRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+        function getRandomAnimation() {
+            const animations = ["anim-top","anim-bottom","anim-left","anim-right","anim-topleft","anim-topright","anim-bottomleft","anim-bottomright"];
+            return getRandom(animations);
+        }
+        function getRandomPopupContent() {
+            const content = getRandom(popupContents);
+            const icon = getRandom(POPUP_CONFIG.icons);
+            const title = getRandom(POPUP_CONFIG.titles);
+            const theme = getRandom(POPUP_CONFIG.themes);
+            const animation = getRandomAnimation();
+            return { title: `${icon} ${title}`, content, theme, animation };
+        }
+        function removePopup(popup) {
+            if (!popup.parentNode) return;
+            popup.style.opacity = "0";
+            popup.style.transform = "scale(0)";
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.remove();
+                    currentPopupCount--;
+                }
+            }, 300);
+        }
+        function createPopup() {
+            if (currentPopupCount >= POPUP_CONFIG.maxCount) return;
+            const popupLayer = document.getElementById("popup-layer");
+            const content = getRandomPopupContent();
+            const popup = document.createElement("div");
+            popup.className = `popup theme-${content.theme} ${content.animation}`;
+            popup.innerHTML = `
+                <div class="header">
+                    <span class="icon">${content.title.split(' ')[0]}</span>
+                    <span class="title">${content.title.split(' ')[1]}</span>
+                    <button class="close-btn">×</button>
+                </div>
+                <div class="content">${content.content}</div>
+            `;
+            const popupWidth = IS_MOBILE ? Math.min(230, window.innerWidth * 0.85) : 180;
+            const popupHeight = 100;
+            const left = Math.random() * (window.innerWidth - popupWidth);
+            const top = Math.random() * (window.innerHeight - popupHeight);
+            popup.style.left = `${left}px`;
+            popup.style.top = `${top}px`;
+            popup.style.width = `${popupWidth}px`;
+            popupLayer.appendChild(popup);
+            currentPopupCount++;
+            const closeBtn = popup.querySelector('.close-btn');
+            closeBtn.addEventListener('click', () => removePopup(popup));
+            popup.addEventListener('click', (e) => { if (e.target !== closeBtn) removePopup(popup); });
+            setTimeout(() => removePopup(popup), POPUP_CONFIG.autoRemoveTime);
+        }
+
+        function startPopupScene() {
+            if (currentState === STATE.POPUP) return;
+            log('进入弹窗祝福场景');
+            currentState = STATE.POPUP;
+            // 隐藏蛋糕相关UI，显示弹窗层
+            ui.topBanner.classList.add('hidden');
+            ui.blowMeter.style.opacity = '0';
+            ui.blowHint.style.opacity = '0';
+            ui.settingsPanel.style.display = 'none';
+            ui.mainText.innerText = '';
+            ui.subText.innerText = '';
+            // 隐藏粒子系统（可选），保留背景黑色即可
+            if (particleSystem) particleSystem.visible = false;
+            // 显示弹窗层并开始生成
+            popupLayer.classList.add('active');
+            if (popupInterval) clearInterval(popupInterval);
+            popupInterval = setInterval(createPopup, POPUP_CONFIG.createInterval);
+        }
+
+        function stopPopupScene() {
+            if (currentState !== STATE.POPUP) return;
+            log('退出弹窗祝福场景');
+            // 停止生成，清空现有弹窗
+            if (popupInterval) {
+                clearInterval(popupInterval);
+                popupInterval = null;
+            }
+            // 移除所有弹窗
+            document.querySelectorAll('#popup-layer .popup').forEach(p => p.remove());
+            currentPopupCount = 0;
+            popupLayer.classList.remove('active');
+            // 恢复粒子显示
+            if (particleSystem) particleSystem.visible = true;
+            // 恢复蛋糕场景显示
+            currentState = STATE.BLOWING; // 或者回到吹气状态？根据原逻辑，showCake()设置STATE.BLOWING
+            // 但为了复用，直接调用showCake()
+            showCake(); // 这会设置状态为BLOWING并显示蛋糕
+        }
+
         // 初始化 Three.js
         initThree();
 
@@ -400,13 +706,16 @@
             
             // 限制主体粒子数不超过总粒子的70%，确保有30%的背景粒子
             const targetCustomCount = Math.floor(VISUAL_CONFIG.particleCount * 0.7);
-            loadCustomImagePoints('./src/1.png', targetCustomCount).then(points => {
-                shapeCache['custom'] = points;
-                if (ui.loadingText) ui.loadingText.style.display = 'none';
-            }).catch(err => {
-                log('图片加载失败，使用默认爱心后备');
-                shapeCache['custom'] = generateFallbackPoints(targetCustomCount);
-            });
+            // 不再需要加载自定义图片，但保留以防后续使用；可以注释掉
+            // loadCustomImagePoints('./src/1.png', targetCustomCount).then(points => {
+            //     shapeCache['custom'] = points;
+            //     if (ui.loadingText) ui.loadingText.style.display = 'none';
+            // }).catch(err => {
+            //     log('图片加载失败，使用默认爱心后备');
+            //     shapeCache['custom'] = generateFallbackPoints(targetCustomCount);
+            // });
+            // 为兼容原逻辑，仍然给shapeCache['custom']一个空数组或备用
+            shapeCache['custom'] = generateFallbackPoints(targetCustomCount); // 直接使用备用爱心
             
             createParticles();
             window.addEventListener('resize', () => {
@@ -491,7 +800,7 @@
             return new THREE.CanvasTexture(c);
         }
 
-        // ================== 从图片生成粒子点阵 ==================
+        // ================== 从图片生成粒子点阵（保留但改为后备） ==================
         function loadCustomImagePoints(src, targetCount) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -749,40 +1058,32 @@
             }
         }
 
-        // 触发自定义图片场景
-        function transitionToCustomImage() {
-            if (currentState === STATE.CUSTOM_IMAGE) return;
-            if (!shapeCache['custom']) {
-                log('自定义图片尚未加载完成，无法切换');
-                ui.gestureHint.innerText = '图片加载中，请稍后...';
-                ui.gestureHint.classList.remove('hidden');
-                setTimeout(() => ui.gestureHint.classList.add('hidden'), 2000);
-                return;
-            }
-            log('手势1/键盘1触发: 进入自定义图片粒子星空 (已去白底)');
-            currentState = STATE.CUSTOM_IMAGE;
-            particleSystem.rotation.y = 0; // 保持静止
-            transitionTo('custom');
-            ui.topBanner.classList.add('hidden');
-            ui.blowMeter.style.opacity = '0';
-            ui.blowHint.style.opacity = '0';
-            ui.settingsPanel.style.display = 'none';
-            ui.mainText.innerText = '';
-            ui.subText.innerText = '';
-            ui.gestureHint.classList.remove('hidden');
-            setTimeout(() => ui.gestureHint.classList.add('hidden'), 3000);
+        // 触发弹窗祝福场景（替换原来的自定义图片场景）
+        function transitionToPopupScene() {
+            if (currentState === STATE.POPUP) return;
+            // 如果当前处于吹气等状态，先隐藏相关UI
+            startPopupScene();
         }
 
         // 返回蛋糕场景（通过剪刀手）
         function returnToCake() {
-            if (currentState !== STATE.CUSTOM_IMAGE) return;
-            log('剪刀手手势触发: 返回蛋糕场景');
-            showCake();
+            if (currentState === STATE.POPUP) {
+                stopPopupScene();
+            } else if (currentState === STATE.CUSTOM_IMAGE) {
+                // 如果还在自定义图片状态（虽然已移除），但保留以防万一
+                showCake();
+            }
             ui.gestureHint.classList.add('hidden');
         }
 
-        // 更新粒子动画
+        // 更新粒子动画（在POPUP状态下可以不更新或更新背景）
         function updateParticles() {
+            // 如果处于弹窗状态，可以暂停粒子更新以节省性能，或者继续更新背景
+            if (currentState === STATE.POPUP) {
+                // 保持粒子不可见或静止，但为了简化，直接返回不更新
+                return;
+            }
+
             const positions = particleSystem.geometry.attributes.position.array;
             const colors = particleSystem.geometry.attributes.color.array;
             const sizes = particleSystem.geometry.attributes.size.array;
@@ -852,13 +1153,19 @@
                     }
                 }
 
+                // 火焰粒子特殊处理
                 if (p.type === 'flame') {
                     const noise = Math.sin(time * 6 + p.noiseOffset) * 0.6;
                     target.x += noise;
-                    // 淡化消失：移除向上移动，改为颜色变黑（消失）并配合后面的尺寸缩小
-                    if (blowInfluence > 0.1 || currentState === STATE.CELEBRATION) {
-                        // 目标颜色渐变为黑色（背景色），实现视觉上的消失
-                        p.targetColor.lerp(new THREE.Color(0x000000), 0.1);
+                    
+                    const shouldExtinguish = (blowProgress >= 100) || (currentState === STATE.CELEBRATION);
+                    if (shouldExtinguish) {
+                        // 快速熄灭：颜色向黑色过渡，大小快速缩小
+                        p.targetColor.lerp(new THREE.Color(0x000000), 0.3);
+                        sizes[i] = Math.max(0, sizes[i] * 0.8);
+                    } else {
+                        // 正常火焰：保持颜色，大小正常波动
+                        sizes[i] = 1.5 + Math.sin(time + i) * 0.3;
                     }
                 }
 
@@ -872,10 +1179,8 @@
                 colors[i*3+1] += (p.targetColor.g - colors[i*3+1]) * 0.1;
                 colors[i*3+2] += (p.targetColor.b - colors[i*3+2]) * 0.1;
 
-                if (p.type === 'flame' && (blowInfluence > 0.1 || currentState === STATE.CELEBRATION)) {
-                    sizes[i] = Math.max(0, 1.5 * (1 - blowInfluence)); 
-                    if(currentState === STATE.CELEBRATION) sizes[i] *= 0.9;
-                } else {
+                // 非火焰粒子通用大小
+                if (p.type !== 'flame') {
                     sizes[i] = 1.2 + Math.sin(time + i) * 0.3;
                 }
             }
@@ -941,6 +1246,8 @@
             ui.blowMeter.style.opacity = '1';
             ui.blowHint.style.opacity = '1';
             ui.gestureHint.classList.add('hidden');
+            // 确保粒子可见
+            if (particleSystem) particleSystem.visible = true;
         }
 
         function successCelebration() {
@@ -1157,7 +1464,7 @@
             }
             if (e.key === '1' && currentState !== STATE.INTRO) {
                 e.preventDefault();
-                transitionToCustomImage();
+                transitionToPopupScene(); // 改为弹窗场景
             }
             if (e.key === '2' && currentState !== STATE.INTRO) {
                 returnToCake();
@@ -1237,7 +1544,6 @@
             });
             
             hands.onResults((results) => {
-                // 使用 try-catch 防止未捕获的异常导致 MediaPipe 停止
                 try {
                     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                         const landmarks = results.multiHandLandmarks[0];
@@ -1245,15 +1551,16 @@
                         ui.camStatusText.innerText = "DETECTED";
                         ui.camStatusText.className = "text-[8px] text-green-400 font-mono font-bold";
                         
-                        // 检测手势1 (食指竖起)
                         if (isGestureOne(landmarks)) {
-                            if (currentState !== STATE.CUSTOM_IMAGE) {
-                                transitionToCustomImage();
+                            if (currentState !== STATE.POPUP) {
+                                transitionToPopupScene();
                             }
                         }
-                        // 检测剪刀手 (手势2) 返回蛋糕场景
                         else if (isTwoFingerGesture(landmarks)) {
-                            if (currentState === STATE.CUSTOM_IMAGE) {
+                            // 如果在弹窗场景，返回蛋糕
+                            if (currentState === STATE.POPUP) {
+                                returnToCake();
+                            } else if (currentState === STATE.CUSTOM_IMAGE) {
                                 returnToCake();
                             }
                         }
@@ -1263,7 +1570,7 @@
                             }
                         }
                         
-                        if (interactionMode === 1 && currentState !== STATE.CUSTOM_IMAGE) {
+                        if (interactionMode === 1 && currentState !== STATE.POPUP && currentState !== STATE.CUSTOM_IMAGE) {
                             const currentHandX = landmarks[9].x; 
                             const delta = currentHandX - lastHandX;
                             if (Math.abs(delta) > 0.002) {
@@ -1277,7 +1584,6 @@
                         ui.camStatusText.className = "text-[8px] text-red-400 font-mono";
                     }
 
-                    // 绘制手部骨架（如果库可用）
                     const ctx = document.getElementById('output_canvas').getContext('2d');
                     ctx.clearRect(0, 0, 160, 120);
                     if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
@@ -1289,7 +1595,6 @@
                     }
                 } catch (e) {
                     log('MediaPipe onResults 回调出错：' + e);
-                    // 即使出错也不让摄像头停止，继续下一帧
                 }
             });
 
