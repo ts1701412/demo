@@ -19,7 +19,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" crossorigin="anonymous"></script>
 
     <style>
-        /* 原有生日贺卡样式保持不变 */
         :root { --bg-gradient: radial-gradient(circle at center, #1a0b1a 0%, #000000 100%); }
         body { 
             margin: 0; overflow: hidden; 
@@ -368,7 +367,7 @@
             <div class="space-y-4 text-gray-200 text-lg mb-8 font-light">
                 <p>👋 <b>對著鏡頭 舉起雙手</b> 喚醒魔法</p>
                 <p>👉 <b>竖起食指 (手势1)</b> 召唤弹窗祝福</p>
-                <p>✌️ <b>剪刀手 (手势2)</b> 返回蛋糕场景</p>
+                <p>✌️ <b>剪刀手 (手势2)</b> 返回蛋糕场景（直接庆祝）</p>
                 <p>💨 <b>持續吹氣</b> 許下心願</p>
             </div>
             <button id="start-btn" class="safe-click-area px-12 py-4 bg-gradient-to-r from-pink-600 to-purple-700 rounded-full font-bold text-xl hover:scale-105 active:scale-95 transition transform shadow-[0_0_20px_rgba(255,105,180,0.5)] text-white border border-white/20 cursor-pointer z-50">
@@ -509,7 +508,7 @@
         const CAKE_THEME = { bottom: "#800080", top: "#DDA0DD", cream: "#FFFFE0" };
         const VISUAL_CONFIG = { particleCount: IS_MOBILE ? 4000 : 7500, color: 0xff69b4, blowThreshold: 25, blowMaxDuration: 100 };
         // 状态定义
-        const STATE = { INTRO: -1, IDLE: 0, COUNTDOWN: 1, CAKE: 2, BLOWING: 3, CELEBRATION: 4, POPUP: 5 }; // 新增 POPUP 状态
+        const STATE = { INTRO: -1, IDLE: 0, COUNTDOWN: 1, CAKE: 2, BLOWING: 3, CELEBRATION: 4, POPUP: 5 };
         
         let currentState = STATE.INTRO;
         let interactionMode = 0; 
@@ -571,17 +570,17 @@
         // ========== 弹窗祝福模块 ==========
         const popupLayer = document.getElementById('popup-layer');
         const popupContents = [
-         "多喝水哦~", "保持微笑呀", "每天都要元氣滿滿", "記得好好吃飯", "珍惜每一刻",
- "你超棒的", "記得好好保養", "早點休息", "金榜題名", "保持好心情", "注意保暖",
- "萬事如意", "心想事成", "平安喜樂", "健康快樂", "學業有成", "工作順利", "財源廣進",
- "閔家幸福", "笑口常開", "好運連連", "夢想成真", "友誼長存", "愛情甜蜜",
- "早餐加蛋更營養呀", "通勤別趕太急哦", "累了伸個懶腰吧", "今天會有小幸運呢",
- "別被瑣事絆住腳呀", "午餐加份蔬菜呀", "傍晚散步很愜意呢", "睡前泡泡腳舒服哦",
- "偶爾放空也不錯呀", "遇難題先深呼吸呀", "每天都要更愛自己", "天冷加件外套哦",
- "讀首小詩放鬆下吧", "跟爸媽通個電話呀", "別鑽牛角尖啦", "路邊的小草也在生長呢",
- "加班別忘吃點東西", "用眼久了閉閉眼呀", "你今天也在進步呢", "煩惱會慢慢消失的",
- "下雨天記得穿防滑鞋", "夏天多吃點水果呀", "跟朋友分享趣事吧", "夜裡不做惡夢哦",
- "做件小事獎勵自己", "別焦慮，一切都會好", "學會新東西超棒呀", "遇到的人都很友善呢"
+            "多喝水哦~", "保持微笑呀", "每天都要元气满满", "记得好好吃饭", "珍惜每一刻",
+            "你超棒的", "记得好好护肤", "早点休息", "金榜题名", "保持好心情", "注意保暖",
+            "万事如意", "心想事成", "平安喜乐", "健康快乐", "学业有成", "工作顺利", "财源广进",
+            "阖家幸福", "笑口常开", "好运连连", "梦想成真", "友谊长存", "爱情甜蜜",
+            "早餐加个蛋更营养呀", "通勤别赶太急哦", "累了伸个懒腰吧", "今天会有小幸运呢",
+            "别被琐事绊住脚呀", "午餐加份蔬菜呀", "傍晚散步很惬意呢", "睡前泡泡脚舒服哦",
+            "偶尔放空也不错呀", "遇难题先深呼吸呀", "每天都要更爱自己", "天冷加件外套哦",
+            "读首小诗放松下吧", "和爸妈通个电话呀", "别钻牛角尖啦", "路边的小草也在生长呢",
+            "加班别忘吃点东西", "用眼久了闭闭眼呀", "你今天也在进步呢", "烦恼会慢慢消失的",
+            "雨天记得穿防滑鞋", "夏天多吃点水果呀", "和朋友分享趣事吧", "夜里不做噩梦哦",
+            "做件小事奖励自己", "别焦虑，一切都会好", "学会新东西超棒呀", "遇到的人都很友善呢"
         ];
         const POPUP_CONFIG = {
             maxCount: IS_MOBILE ? 90 : 150,
@@ -589,7 +588,7 @@
             autoRemoveTime: 12000,
             themes: ["blue","green","orange","purple","pink","yellow","cyan","lime","red","teal","indigo","amber","rose","mint","peach","lavender","coral","sky","lemon"],
             icons: ["✨","😊","🌟","💖","☀️","💪","🌸","🥰","🎉","💫","🎃","🍬","👻"],
-            titles: [`給你的祝福`, `給你的話`, `給你的温馨提醒`, `給你的寄語`]
+            titles: [`给你的祝福`, `给你的话`, `给你的温馨提醒`, `给你的寄语`]
         };
         let currentPopupCount = 0;
         let popupInterval = null;
@@ -660,7 +659,7 @@
             ui.settingsPanel.style.display = 'none';
             ui.mainText.innerText = '';
             ui.subText.innerText = '';
-            // 隐藏粒子系统（可选），保留背景黑色即可
+            // 隐藏粒子系统
             if (particleSystem) particleSystem.visible = false;
             // 显示弹窗层并开始生成
             popupLayer.classList.add('active');
@@ -682,10 +681,6 @@
             popupLayer.classList.remove('active');
             // 恢复粒子显示
             if (particleSystem) particleSystem.visible = true;
-            // 恢复蛋糕场景显示
-            currentState = STATE.BLOWING; // 或者回到吹气状态？根据原逻辑，showCake()设置STATE.BLOWING
-            // 但为了复用，直接调用showCake()
-            showCake(); // 这会设置状态为BLOWING并显示蛋糕
         }
 
         // 初始化 Three.js
@@ -704,18 +699,8 @@
             
             preloadBasicShapes();
             
-            // 限制主体粒子数不超过总粒子的70%，确保有30%的背景粒子
             const targetCustomCount = Math.floor(VISUAL_CONFIG.particleCount * 0.7);
-            // 不再需要加载自定义图片，但保留以防后续使用；可以注释掉
-            // loadCustomImagePoints('./src/1.png', targetCustomCount).then(points => {
-            //     shapeCache['custom'] = points;
-            //     if (ui.loadingText) ui.loadingText.style.display = 'none';
-            // }).catch(err => {
-            //     log('图片加载失败，使用默认爱心后备');
-            //     shapeCache['custom'] = generateFallbackPoints(targetCustomCount);
-            // });
-            // 为兼容原逻辑，仍然给shapeCache['custom']一个空数组或备用
-            shapeCache['custom'] = generateFallbackPoints(targetCustomCount); // 直接使用备用爱心
+            shapeCache['custom'] = generateFallbackPoints(targetCustomCount); // 备用爱心
             
             createParticles();
             window.addEventListener('resize', () => {
@@ -798,91 +783,6 @@
             g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(1,'rgba(255,255,255,0)');
             ctx.fillStyle=g; ctx.fillRect(0,0,64,64);
             return new THREE.CanvasTexture(c);
-        }
-
-        // ================== 从图片生成粒子点阵（保留但改为后备） ==================
-        function loadCustomImagePoints(src, targetCount) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const maxSize = 200;
-                    let width = img.width;
-                    let height = img.height;
-                    if (width > height) {
-                        if (width > maxSize) {
-                            height = Math.floor(height * maxSize / width);
-                            width = maxSize;
-                        }
-                    } else {
-                        if (height > maxSize) {
-                            width = Math.floor(width * maxSize / height);
-                            height = maxSize;
-                        }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    const imageData = ctx.getImageData(0, 0, width, height).data;
-                    const points = [];
-                    const step = 1;
-                    const WHITE_THRESHOLD = 240 / 255;
-
-                    for (let y = 0; y < height; y += step) {
-                        for (let x = 0; x < width; x += step) {
-                            const index = (y * width + x) * 4;
-                            const r = imageData[index] / 255;
-                            const g = imageData[index + 1] / 255;
-                            const b = imageData[index + 2] / 255;
-                            const a = imageData[index + 3] / 255;
-                            
-                            if (a > 0.5) {
-                                if (r > WHITE_THRESHOLD && g > WHITE_THRESHOLD && b > WHITE_THRESHOLD) {
-                                    continue;
-                                }
-                                const vec = new THREE.Vector3(
-                                    (x - width / 2) / 4,
-                                    -(y - height / 2) / 4,
-                                    0
-                                );
-                                points.push({
-                                    vec: vec,
-                                    type: 'custom',
-                                    color: new THREE.Color(r, g, b)
-                                });
-                            }
-                        }
-                    }
-                    log(`图片采样完成：共 ${points.length} 个非白像素`);
-
-                    if (points.length >= targetCount) {
-                        const shuffled = points.sort(() => 0.5 - Math.random());
-                        resolve(shuffled.slice(0, targetCount));
-                    } else {
-                        const result = [];
-                        for (let i = 0; i < targetCount; i++) {
-                            const original = points[i % points.length];
-                            const cloned = original.vec.clone();
-                            cloned.x += (Math.random() - 0.5) * 1.2;
-                            cloned.y += (Math.random() - 0.5) * 1.2;
-                            cloned.z += (Math.random() - 0.5) * 1.2;
-                            result.push({
-                                vec: cloned,
-                                type: 'custom',
-                                color: original.color.clone()
-                            });
-                        }
-                        resolve(result);
-                    }
-                };
-                img.onerror = (err) => {
-                    log('图片加载错误: ' + src);
-                    reject(err);
-                };
-                img.src = src;
-            });
         }
 
         // 后备爱心形状
@@ -1058,30 +958,81 @@
             }
         }
 
-        // 触发弹窗祝福场景（替换原来的自定义图片场景）
+        // 触发弹窗祝福场景
         function transitionToPopupScene() {
             if (currentState === STATE.POPUP) return;
-            // 如果当前处于吹气等状态，先隐藏相关UI
             startPopupScene();
         }
 
-        // 返回蛋糕场景（通过剪刀手）
-        function returnToCake() {
+        // 返回蛋糕场景并直接庆祝（不弹出卡片）
+        function returnToCakeAndCelebrate() {
             if (currentState === STATE.POPUP) {
                 stopPopupScene();
+                // 直接进入庆祝状态，不显示卡片
+                directCelebration();
             } else if (currentState === STATE.CUSTOM_IMAGE) {
-                // 如果还在自定义图片状态（虽然已移除），但保留以防万一
-                showCake();
+                // 如果还在自定义图片状态（已废弃），也调用
+                directCelebration();
             }
             ui.gestureHint.classList.add('hidden');
         }
 
-        // 更新粒子动画（在POPUP状态下可以不更新或更新背景）
+        // 直接庆祝（无卡片）
+        function directCelebration() {
+            log('直接进入庆祝画面，不弹出卡片');
+            currentState = STATE.CELEBRATION;
+            ui.statusText.innerText = "WISH GRANTED";
+            ui.blowMeter.style.opacity = '0';
+            ui.blowHint.style.opacity = '0';
+            ui.settingsPanel.style.display = 'none';
+            ui.topBanner.classList.add('hidden');
+            
+            document.body.classList.add('shake-screen');
+            setTimeout(() => document.body.classList.remove('shake-screen'), 500);
+
+            // 粒子动画：蛋糕粒子跳动，火焰熄灭
+            particlesData.forEach(p => {
+                if (p.type === 'cake' || p.type === 'candle' || p.type === 'ring') {
+                    p.target.y += Math.sin(p.current.x * 0.5) * 0.5; 
+                } else if (p.type !== 'flame') {
+                    p.type = 'bg'; 
+                }
+            });
+
+            // 注意：不显示 surpriseLayer 和 revealBtn
+        }
+
+        // 原来的成功庆祝（保留用于吹气满100%的情况）
+        function successCelebration() {
+            log('许愿成功！播放庆祝动画，显示卡片');
+            currentState = STATE.CELEBRATION;
+            ui.statusText.innerText = "WISH GRANTED";
+            ui.blowMeter.style.opacity = '0';
+            ui.blowHint.style.opacity = '0';
+            ui.settingsPanel.style.display = 'none';
+            
+            document.body.classList.add('shake-screen');
+            setTimeout(() => document.body.classList.remove('shake-screen'), 500);
+
+            particlesData.forEach(p => {
+                if (p.type === 'cake' || p.type === 'candle' || p.type === 'ring') {
+                    p.target.y += Math.sin(p.current.x * 0.5) * 0.5; 
+                } else if (p.type !== 'flame') {
+                    p.type = 'bg'; 
+                }
+            });
+
+            setTimeout(() => {
+                ui.surpriseLayer.classList.remove('hidden');
+                ui.surpriseLayer.classList.add('active');
+                ui.revealBtn.classList.remove('hidden');
+            }, 1500);
+        }
+
+        // 更新粒子动画
         function updateParticles() {
-            // 如果处于弹窗状态，可以暂停粒子更新以节省性能，或者继续更新背景
             if (currentState === STATE.POPUP) {
-                // 保持粒子不可见或静止，但为了简化，直接返回不更新
-                return;
+                return; // 弹窗场景暂停粒子更新
             }
 
             const positions = particleSystem.geometry.attributes.position.array;
@@ -1139,7 +1090,6 @@
                         target.y = p.baseTarget.y + offsetY;
                         target.z = p.baseTarget.z + offsetZ;
 
-                        // 星空颜色
                         const hue = 0.65 + (p.noiseOffset * 0.002) % 0.3;
                         const saturation = 0.8;
                         let lightness = 0.3 + (p.noiseOffset % 0.4);
@@ -1164,7 +1114,6 @@
                         p.targetColor.lerp(new THREE.Color(0x000000), 0.3);
                         sizes[i] = Math.max(0, sizes[i] * 0.8);
                     } else {
-                        // 正常火焰：保持颜色，大小正常波动
                         sizes[i] = 1.5 + Math.sin(time + i) * 0.3;
                     }
                 }
@@ -1179,7 +1128,6 @@
                 colors[i*3+1] += (p.targetColor.g - colors[i*3+1]) * 0.1;
                 colors[i*3+2] += (p.targetColor.b - colors[i*3+2]) * 0.1;
 
-                // 非火焰粒子通用大小
                 if (p.type !== 'flame') {
                     sizes[i] = 1.2 + Math.sin(time + i) * 0.3;
                 }
@@ -1246,34 +1194,7 @@
             ui.blowMeter.style.opacity = '1';
             ui.blowHint.style.opacity = '1';
             ui.gestureHint.classList.add('hidden');
-            // 确保粒子可见
             if (particleSystem) particleSystem.visible = true;
-        }
-
-        function successCelebration() {
-            log('許愿成功！播放慶祝動畫');
-            currentState = STATE.CELEBRATION;
-            ui.statusText.innerText = "WISH GRANTED";
-            ui.blowMeter.style.opacity = '0';
-            ui.blowHint.style.opacity = '0';
-            ui.settingsPanel.style.display = 'none';
-            
-            document.body.classList.add('shake-screen');
-            setTimeout(() => document.body.classList.remove('shake-screen'), 500);
-
-            particlesData.forEach(p => {
-                if (p.type === 'cake' || p.type === 'candle' || p.type === 'ring') {
-                    p.target.y += Math.sin(p.current.x * 0.5) * 0.5; 
-                } else if (p.type !== 'flame') {
-                    p.type = 'bg'; 
-                }
-            });
-
-            setTimeout(() => {
-                ui.surpriseLayer.classList.remove('hidden');
-                ui.surpriseLayer.classList.add('active');
-                ui.revealBtn.classList.remove('hidden');
-            }, 1500);
         }
 
         document.getElementById('picker-bottom').addEventListener('input', (e) => CAKE_THEME.bottom = e.target.value);
@@ -1464,10 +1385,10 @@
             }
             if (e.key === '1' && currentState !== STATE.INTRO) {
                 e.preventDefault();
-                transitionToPopupScene(); // 改为弹窗场景
+                transitionToPopupScene(); // 手势1进弹窗
             }
             if (e.key === '2' && currentState !== STATE.INTRO) {
-                returnToCake();
+                returnToCakeAndCelebrate(); // 手势2返回并庆祝
             }
         });
 
@@ -1557,11 +1478,15 @@
                             }
                         }
                         else if (isTwoFingerGesture(landmarks)) {
-                            // 如果在弹窗场景，返回蛋糕
+                            // 如果在弹窗场景，返回并庆祝；如果在吹气状态，也触发庆祝？但需求是手势2返回并庆祝，这里统一处理
                             if (currentState === STATE.POPUP) {
-                                returnToCake();
-                            } else if (currentState === STATE.CUSTOM_IMAGE) {
-                                returnToCake();
+                                returnToCakeAndCelebrate();
+                            } else if (currentState === STATE.BLOWING) {
+                                // 如果在吹气中，也可以直接庆祝（可选），但为了保持原逻辑，可以跳过或触发庆祝
+                                // 这里我们让手势2在任何非弹窗状态都直接庆祝（吹气中也可直接庆祝）
+                                // 但注意：手势2原本是返回蛋糕场景，现在改为庆祝。我们只处理从弹窗返回的情况，其他情况忽略或也庆祝？
+                                // 按照需求，手势2应该是返回主场景并直接庆祝，那么如果当前不在弹窗，可能也触发庆祝？
+                                // 为明确，我们只处理从弹窗返回。其他情况不做处理，保持原逻辑。
                             }
                         }
                         else {
